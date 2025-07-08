@@ -38,10 +38,3 @@ Welcome to the **Movie Recommendation System** — an intelligent web applicatio
 
 ---
 
-## 🛠️ Setup Instructions
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/movies-recommendation.git
-cd movies-recommendation
