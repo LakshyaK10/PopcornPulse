@@ -2,8 +2,10 @@ from flask import Flask, render_template, request,jsonify,redirect, url_for;
 import re
 import pandas as pd
 from recommender import get_recommendations 
-# from gemini_utils import get_mood_based_movies
-# from movie_ai import get_movie_recommendation,parse_response, get_movie_details
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 
 app = Flask(__name__)
@@ -32,7 +34,8 @@ movies_df = pd.merge(movies_df, tags_agg, on='movieId', how='left')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    tmdb_api_key = os.getenv('TMDB_API_KEY')
+    return render_template('index.html', tmdb_api_key=tmdb_api_key)
 
 @app.route('/mood', methods=['GET'])
 def mood_page():
@@ -41,65 +44,6 @@ def mood_page():
 @app.route('/no')
 def home():
     return render_template("mood.html")
-
-# @app.route('/get_mood_recommendations', methods=['POST'])
-# def get_mood_recommendations():
-#     data = request.get_json()
-#     mood = data.get("mood", "")
-#     if not mood:
-#         return jsonify({"recommendations": []})
-    
-#     try:
-#         raw_response = get_movie_recommendation(mood)
-#         print("Gemini Response:\n", raw_response)
-#         recommendations = parse_response(raw_response)
-#         if recommendations:
-#             return jsonify({"type": "recommendations", "data": recommendations})
-#         else:
-#             return jsonify({"type": "mood", "message": raw_response})
-
-#     except Exception as e:
-#         print("Error:", e)
-#         return jsonify({"recommendations": []})
-    
-# @app.route('/get_movie_details', methods=['POST'])
-# def get_movie_details_route():
-#     data = request.get_json()
-#     movie_title = data.get("movie_title", "")
-#     if not movie_title:
-#         return jsonify({"detail": "Please provide a movie title."})
-    
-#     try:
-#         details = get_movie_details(movie_title)
-#         return jsonify({"detail": details})
-#     except Exception as e:
-#         print("Error:", e)
-#         return jsonify({"detail": "Error fetching movie details."})
-
-# @app.route('/get_recommendations', methods=['POST'])
-# def get_general_recommendations():
-#     mood = request.json.get('mood')
-#     if not mood:
-#         return jsonify({'error': 'Mood is required'}), 400
-
-#     recommendations = get_mood_based_movies(mood)
-#     print("Recommendations:", recommendations)
-#     return jsonify({'recommendations': recommendations})
-# def parse_response(response_text):
-#     # Basic example assuming Gemini returns a bullet list format
-#     movies = []
-#     for line in response_text.split('\n'):
-#         if '-' in line:
-#             match = re.match(r"-\s*(.*) \((.*)\) - IMDb: (.*?)\s*:\s*(.*)", line)
-#             if match:
-#                 title, genre, rating, description = match.groups()
-#                 movies.append({
-#                     "title": title.strip(),
-#                     "genre": genre.strip(),
-#                     "rating": rating.strip(),
-#                     "description": description.strip()
-#                 })
-#     return movies
 
 @app.route('/watchlist')
 def watchlist():

@@ -70,15 +70,6 @@
     </form>
   </div>
 
-<!-- Surprise Me Section
-<section class="surprise-section">
-  <button id="surprise-btn">Get Random Movie</button>
-  <div id="surprise-movie" class="surprise-container"></div>
-  
-</section> -->
-
-
-
 
   <!-- AI Assistant -->
   <form action="/no" method="get">
@@ -145,7 +136,8 @@
 
     // Trending Movies Carousel
     document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
+  const apiKey = "{{ tmdb_api_key }}";
+
   const trendingContainer = document.getElementById("trending-carousel");
 
   function fetchTrending() {
@@ -202,7 +194,7 @@ autoScroll(bestContainer, 250, 6000);
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
+  const apiKey = "{{ tmdb_api_key }}";
   const bestContainer = document.getElementById("best-carousel");
 
   function fetchBestMovies() {
