@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Watchlist</title>
+    <link rel="stylesheet" href="static/watchlist.css">
+</head>
+<body>
+    <h1>My Watchlist</h1>
+
+    <div class="watchlist-container" id="watchlistContainer"></div>
+
+    <script>
+        const container = document.getElementById('watchlistContainer');
+        let watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
+
+        function renderWatchlist() {
+            container.innerHTML = '';
+            if (watchlist.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No movies in your watchlist yet.</p>";
+            return;
+        }
+
+        watchlist.forEach((movie, index) => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}">
+            <div class="movie-info">
+                <h3>${movie.title}</h3>
+                <p>${movie.genre || ''}</p>
+                <p>⭐ ${movie.rating || 'N/A'}</p>
+                <br/>
+            </div>
+            <button class="remove-btn" onclick="removeFromWatchlist(${index})">🗑️</button>
+        `;
+        container.appendChild(card);
+        });
+        }
+
+  function removeFromWatchlist(index) {
+    const removed = watchlist.splice(index, 1);
+    localStorage.setItem('watchlist', JSON.stringify(watchlist));
+    alert(`${removed[0].title} removed from your watchlist!`);
+    renderWatchlist();
+  }
+
+  renderWatchlist();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <div id="particles-js"></div>
+    <script>
+        particlesJS('particles-js', {
+          particles: {
+            number: { value: 70 },
+            size: { value: 3 },
+            move: { speed: 1.5 },
+            line_linked: { enable: true },
+            color: { value: "#ffffff" }
+          
+          },interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: {
+            enable: true,
+            mode: "repulse"
+          },
+          onclick: {
+            enable: false
+          },
+          resize: true
+        },
+        modes: {
+          repulse: {
+            distance: 150,   
+            duration: 0.5,
+            speed: 2
+          }
+        }
+      },
+      retina_detect: true
+        });
+        </script>
+
+
+<a href="{{ url_for('index') }}" class="back-home">← Back to Home</a>
+
+
+</body>
+</html>

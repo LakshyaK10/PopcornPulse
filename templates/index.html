@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Recommendation System</title>
+
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="static/style.css">
+
+  <!-- Lottie -->
+  <!-- <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script> -->
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <!-- Background Animation -->
+  <lottie-player
+    src="https://assets1.lottiefiles.com/packages/lf20_jzjvwlcy.json"
+    background="transparent"
+    speed="1"
+    style="position:fixed; width:100%; height:100%; z-index:-2;"
+    loop
+    autoplay>
+  </lottie-player>
+  <div id="particles-js"></div>
+
+  <!-- Welcome Card -->
+  <div class="welcome-card">
+    <h1>🍿 Welcome to <br> PopcornPulse</h1>
+    <p>Discover movies based on your mood, favorite genres, or last watched film. Let AI help you find your next binge!</p>
+  </div>
+
+  <!-- Trending Carousel -->
+  <section class="carousel-section">
+    <h2>Trending Movies</h2>
+    <div class="carousel-wrapper">
+      <button class="carousel-arrow left" id="carousel-left">&#8249;</button>
+      <div class="carousel-container" id="trending-carousel"></div>
+      <button class="carousel-arrow right" id="carousel-right">&#8250;</button>
+    </div>
+  </section>
+
+  <!-- All-Time Best Movies Carousel -->
+<section class="carousel-section">
+  <h2>All-Time Best Movies</h2>
+  <div class="carousel-wrapper">
+    <button class="carousel-arrow left" id="best-left">&#8249;</button>
+    <div class="carousel-container" id="best-carousel"></div>
+    <button class="carousel-arrow right" id="best-right">&#8250;</button>
+  </div>
+</section>
+
+  <!-- Recommendation Buttons -->
+  <div class="recommend-buttons fade-in-bottom">
+    <form action="/recommend-by-genre" method="GET">
+      <button type="submit"><i class="fas fa-film"></i> Genre-based Recommendations</button>
+    </form>
+    <form action="/recommend-by-movie" method="GET">
+      <button type="submit"><i class="fas fa-star"></i> Movie-based Recommendations</button>
+    </form>
+    <form action="/watchlist" method="GET">
+      <button type="submit"><i class="fas fa-heart"></i> My Watchlist</button>
+    </form>
+  </div>
+
+<!-- Surprise Me Section
+<section class="surprise-section">
+  <button id="surprise-btn">Get Random Movie</button>
+  <div id="surprise-movie" class="surprise-container"></div>
+  
+</section> -->
+
+
+
+
+  <!-- AI Assistant -->
+  <form action="/no" method="get">
+    <div class="mood">
+      <input type="submit" value="Mood-based AI Assistant" />
+    </div>
+  </form>
+
+  <!-- Trailer Modal -->
+  <div id="trailer-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeTrailer()">&times;</span>
+      <iframe id="trailer-frame" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Made by Lakshya Khamesra</p>
+    <div class="social-icons">
+      <a href="https://github.com/LakshyaK10" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="https://www.linkedin.com/in/lakshya-khamesra-19b1a7291/" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:lakshyakhamesra@gmail.com"><i class="fas fa-envelope"></i></a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+  <script>
+    // Particles
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 70 },
+        size: { value: 3 },
+        move: { speed: 1.5 },
+        line_linked: { enable: true, color: "#ffffff" }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: { onhover: { enable: true, mode: "repulse" }, resize: true },
+        modes: { repulse: { distance: 150, duration: 0.5 } }
+      },
+      retina_detect: true
+    });
+
+    window.addEventListener("load", () => {
+      document.getElementById("preloader").style.display = "none";
+    });
+
+    // Trailer functions
+    function openTrailer(videoKey) {
+      const trailerModal = document.getElementById("trailer-modal");
+      const trailerFrame = document.getElementById("trailer-frame");
+      trailerFrame.src = `https://www.youtube.com/embed/${videoKey}?autoplay=1`;
+      trailerModal.style.display = "flex";
+    }
+
+    function closeTrailer() {
+      const trailerModal = document.getElementById("trailer-modal");
+      const trailerFrame = document.getElementById("trailer-frame");
+      trailerModal.style.display = "none";
+      trailerFrame.src = "";
+    }
+
+    // Trending Movies Carousel
+    document.addEventListener("DOMContentLoaded", function () {
+  const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+  const trendingContainer = document.getElementById("trending-carousel");
+
+  function fetchTrending() {
+    fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`)
+      .then(response => response.json())
+      .then(data => {
+        trendingContainer.innerHTML = "";
+        data.results.slice(0, 10).forEach(movie => {
+          if (movie.poster_path) {
+            const item = document.createElement("div");
+            item.className = "carousel-item";
+            item.innerHTML = `
+              <div>
+                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" 
+                     alt="${movie.title}" onclick="getTrailer(${movie.id})">
+                <div class="movie-info">
+                  <h4>${movie.title}</h4>
+                  <p>⭐ ${movie.vote_average}</p>
+                  <button class="heart-btn" onclick="addToWatchlist('${movie.title}', '${movie.genre || ''}', ${movie.vote_average}, '${movie.poster_path}')">🖤</button>
+
+                </div>
+              </div>`;
+            trendingContainer.appendChild(item);
+          }
+        });
+      })
+      .catch(err => console.error("TMDB fetch error:", err));
+  }
+
+  fetchTrending();
+
+  document.getElementById("carousel-left").addEventListener("click", () => {
+    trendingContainer.scrollBy({ left: -250, behavior: "smooth" });
+  });
+
+  document.getElementById("carousel-right").addEventListener("click", () => {
+    trendingContainer.scrollBy({ left: 250, behavior: "smooth" });
+  });
+
+  setInterval(() => {
+    trendingContainer.scrollBy({ left: 250, behavior: "smooth" });
+  }, 5000);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+  const bestContainer = document.getElementById("best-carousel");
+
+  function fetchBestMovies() {
+    // Fetch top-rated movies from TMDB
+    fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`)
+      .then(response => response.json())
+      .then(data => {
+        bestContainer.innerHTML = "";
+        data.results.slice(0, 10).forEach(movie => {
+          if (movie.poster_path) {
+            const item = document.createElement("div");
+            item.className = "carousel-item";
+            item.innerHTML = `
+              <div>
+                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" 
+                     alt="${movie.title}" onclick="getTrailer(${movie.id})">
+                <div class="movie-info">
+                  <h4>${movie.title}</h4>
+                  <p>⭐ ${movie.vote_average}</p>
+                  <button class="heart-btn" onclick="addToWatchlist('${movie.title}', 'N/A', ${movie.vote_average}, '${movie.poster_path}')">🖤</button>
+                </div>
+              </div>`;
+            bestContainer.appendChild(item);
+          }
+        });
+      })
+      .catch(err => console.error("TMDB fetch error (Best Movies):", err));
+  }
+
+  fetchBestMovies();
+
+  // Carousel scroll buttons
+  document.getElementById("best-left").addEventListener("click", () => {
+    bestContainer.scrollBy({ left: -250, behavior: "smooth" });
+  });
+  document.getElementById("best-right").addEventListener("click", () => {
+    bestContainer.scrollBy({ left: 250, behavior: "smooth" });
+  });
+
+  // Auto scroll
+  setInterval(() => {
+    bestContainer.scrollBy({ left: 250, behavior: "smooth" });
+  }, 6000);
+});
+
+
+// Surprise Me functionality
+// document.addEventListener("DOMContentLoaded", function () {
+//   const surpriseBtn = document.getElementById("surprise-btn");
+//   const surpriseContainer = document.getElementById("surprise-movie");
+//   const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+
+//   async function getRandomMovie() {
+//     surpriseContainer.innerHTML = "Loading...";
+//     try {
+//       // Fetch popular movies
+//       const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`);
+//       const data = await res.json();
+//       const movies = data.results;
+//       if (movies.length === 0) {
+//         surpriseContainer.innerHTML = "No movies available.";
+//         return;
+//       }
+//       // Pick a random movie
+//       const movie = movies[Math.floor(Math.random() * movies.length)];
+//       surpriseContainer.innerHTML = `
+//         <div class="surprise-card">
+//           <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" onclick="getTrailer(${movie.id})">
+//           <h3>${movie.title}</h3>
+//           <p>⭐ ${movie.vote_average}</p>
+//           <button class="heart-btn" onclick="addToWatchlist('${movie.title}', 'N/A', ${movie.vote_average}, '${movie.poster_path}')">🖤</button>
+//         </div>
+//       `;
+//     } catch (err) {
+//       console.error("Error fetching random movie:", err);
+//       surpriseContainer.innerHTML = "Failed to load movie.";
+//     }
+//   }
+
+//   surpriseBtn.addEventListener("click", getRandomMovie);
+// });
+
+// Dummy function for watchlist
+function addToWatchlist(title, year, rating) {
+  alert(`${title} added to your watchlist!`);
+}
+    function getTrailer(movieId) {
+      const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+      fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+          const trailer = data.results.find(vid => vid.type === "Trailer" && vid.site === "YouTube");
+          if (trailer) openTrailer(trailer.key);
+          else alert("Trailer not available!");
+        })
+        .catch(err => console.error("Trailer fetch error:", err));
+    }
+
+    // Watchlist
+    function addToWatchlist(title, genre, rating, poster_path) {
+      let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+      if (!watchlist.some(m => m.title === title)) {
+        watchlist.push({title, genre, rating, poster_path});
+        localStorage.setItem("watchlist", JSON.stringify(watchlist));
+        alert(`${title} added to your watchlist!`);
+      } else {
+        alert(`${title} is already in your watchlist.`);
+      }
+    }
+
+  </script>
+</body>
+</html>
