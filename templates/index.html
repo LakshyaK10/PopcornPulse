@@ -263,7 +263,7 @@ function addToWatchlist(title, year, rating) {
   alert(`${title} added to your watchlist!`);
 }
     function getTrailer(movieId) {
-      const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
+      const apiKey = "{{ tmdb_api_key }}";
       fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`)
         .then(res => res.json())
         .then(data => {
