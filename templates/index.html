@@ -145,7 +145,7 @@
 
     // Trending Movies Carousel
     document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+  const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
   const trendingContainer = document.getElementById("trending-carousel");
 
   function fetchTrending() {
@@ -177,21 +177,32 @@
 
   fetchTrending();
 
-  document.getElementById("carousel-left").addEventListener("click", () => {
-    trendingContainer.scrollBy({ left: -250, behavior: "smooth" });
-  });
+  // document.getElementById("carousel-left").addEventListener("click", () => {
+  //   trendingContainer.scrollBy({ left: -250, behavior: "smooth" });
+  // });
 
-  document.getElementById("carousel-right").addEventListener("click", () => {
-    trendingContainer.scrollBy({ left: 250, behavior: "smooth" });
-  });
+  // document.getElementById("carousel-right").addEventListener("click", () => {
+  //   trendingContainer.scrollBy({ left: 250, behavior: "smooth" });
+  // });
 
+  function autoScroll(container, scrollAmount, interval) {
   setInterval(() => {
-    trendingContainer.scrollBy({ left: 250, behavior: "smooth" });
-  }, 5000);
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+      // Reset to start
+      container.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  }, interval);
+}
+
+autoScroll(trendingContainer, 250, 7000);
+autoScroll(bestContainer, 250, 6000);
+
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+  const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
   const bestContainer = document.getElementById("best-carousel");
 
   function fetchBestMovies() {
@@ -222,64 +233,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   fetchBestMovies();
+  
+  function autoScroll(container, scrollAmount, interval) {
+  setInterval(() => {
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+      // Reset to start
+      container.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  }, interval);
+}
+
+autoScroll(trendingContainer, 250, 7000);
+autoScroll(bestContainer, 250, 6000);
 
   // Carousel scroll buttons
-  document.getElementById("best-left").addEventListener("click", () => {
-    bestContainer.scrollBy({ left: -250, behavior: "smooth" });
-  });
-  document.getElementById("best-right").addEventListener("click", () => {
-    bestContainer.scrollBy({ left: 250, behavior: "smooth" });
-  });
+  // document.getElementById("best-left").addEventListener("click", () => {
+  //   bestContainer.scrollBy({ left: -250, behavior: "smooth" });
+  // });
+  // document.getElementById("best-right").addEventListener("click", () => {
+  //   bestContainer.scrollBy({ left: 250, behavior: "smooth" });
+  // });
 
-  // Auto scroll
-  setInterval(() => {
-    bestContainer.scrollBy({ left: 250, behavior: "smooth" });
-  }, 6000);
+  
+
 });
+document.addEventListener("DOMContentLoaded", function() {
+  const trendingContainer = document.getElementById("trending-carousel");
+  const bestContainer = document.getElementById("best-carousel");  
+  });
 
 
-// Surprise Me functionality
-// document.addEventListener("DOMContentLoaded", function () {
-//   const surpriseBtn = document.getElementById("surprise-btn");
-//   const surpriseContainer = document.getElementById("surprise-movie");
-//   const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
-
-//   async function getRandomMovie() {
-//     surpriseContainer.innerHTML = "Loading...";
-//     try {
-//       // Fetch popular movies
-//       const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`);
-//       const data = await res.json();
-//       const movies = data.results;
-//       if (movies.length === 0) {
-//         surpriseContainer.innerHTML = "No movies available.";
-//         return;
-//       }
-//       // Pick a random movie
-//       const movie = movies[Math.floor(Math.random() * movies.length)];
-//       surpriseContainer.innerHTML = `
-//         <div class="surprise-card">
-//           <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" onclick="getTrailer(${movie.id})">
-//           <h3>${movie.title}</h3>
-//           <p>⭐ ${movie.vote_average}</p>
-//           <button class="heart-btn" onclick="addToWatchlist('${movie.title}', 'N/A', ${movie.vote_average}, '${movie.poster_path}')">🖤</button>
-//         </div>
-//       `;
-//     } catch (err) {
-//       console.error("Error fetching random movie:", err);
-//       surpriseContainer.innerHTML = "Failed to load movie.";
-//     }
-//   }
-
-//   surpriseBtn.addEventListener("click", getRandomMovie);
-// });
 
 // Dummy function for watchlist
 function addToWatchlist(title, year, rating) {
   alert(`${title} added to your watchlist!`);
 }
     function getTrailer(movieId) {
-      const apiKey = "757b4ed56ee070fd130378c2b584cb9d";
+      const apiKey = "63a124c400fe6cf03e9b13ecb0af0ebd";
       fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`)
         .then(res => res.json())
         .then(data => {

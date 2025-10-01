@@ -1,2 +1,5 @@
 python-3.10.13
+<<<<<<< HEAD
 
+=======
+>>>>>>> c8a7301 (Added runtime.txt, Procfile and updated requirements for Render deployment)
